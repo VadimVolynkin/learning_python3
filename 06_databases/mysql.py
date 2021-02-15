@@ -1,0 +1,1 @@
+https://khashtamov.com/ru/mysql-python/
