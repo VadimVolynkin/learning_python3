@@ -42,7 +42,7 @@ x = s.capitalize()             # Hello world from python перевод перв
 x = s.upper()                  # HELLO WORLD FROM PYTHON перевод всех символов в верхний регистр
 x = s.lower()                  # hello world from python перевод всех символов в нижний регистр
 x = s.casefold()               # hello world from python перевод всех символов в нижний регистр агрессивно
-x = s.swapcase()               # HELLO WORLD fROM python меняет регистр символов
+x = s.swapcase()               # HELLO WORLD fROM python меняет регистр символов на обратный
 
 # ===== УДАЛЕНИЕ И ДОБАВЛЕНИЕ СИМВОЛОВ, ЗАМЕНА
 x = p.lstrip()                 # hello world From PYTHON  убирает пробелы только слева
@@ -101,7 +101,7 @@ x = s.rindex('wor', 2, 20)          # 6 индекс первого совпад
 x = s.count('l', 0, 5)              # 2 считает количество 'l' с 0 по 5 символ
 x =  len(s)                         # 23 считает количество символовв строке
 
-x = s.startswith('hell, 0, 20)      # True строка начинается с (строка, начало, конец)
+x = s.startswith('hell', 0, 20)     # True строка начинается с (строка, начало, конец)
 x = s.startswith('world', 6, 20)    # True строка начинается с (строка, начало, конец)
 x = s.endswith('PYTHON', 6, 23)     # True строка заканчивается на (строка, начало, конец)
 

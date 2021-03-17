@@ -50,6 +50,39 @@ Connection.recv_bytes_into(buffer, offset)
 
 
 
+# ==============================================================================================
+# Пример работы с Pipe
+# ==============================================================================================
+
+from multiprocessing import Pipe
+
+# создание канала(вернет кортеж - 2 конца канала)
+a, b = Pipe()
+
+# a отправлякет, b принимает
+a.send([1, 'hello', None])
+b.recv()                   # [1, 'hello', None]
+
+# b отправлякет, a принимает
+b.send_bytes(b'thank you')
+a.recv_bytes()             # b'thank you'
+
+# ==================================================
+import array
+
+
+arr1 = array.array('i', range(5))
+arr2 = array.array('i', [0] * 10)
+print(arr1)                                  # array('i', [0, 1, 2, 3, 4])
+print(arr2)                                  # array('i', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+a.send_bytes(arr1)                           # а отправляет байты
+count = b.recv_bytes_into(arr2)              # b считает количество байтов в сообщении
+print(count)                                 # 20
+
+assert count == len(arr1) * arr1.itemsize
+arr2                                         # array('i', [0, 1, 2, 3, 4, 0, 0, 0, 0, 0])
 
 
 
