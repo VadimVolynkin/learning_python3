@@ -1,3 +1,0 @@
-bytes
-bytearray
-memoryview
