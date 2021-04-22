@@ -1,101 +1,176 @@
 
+from abc import ABC, abstractmethod
+from typing import List
 
 
-"""
-Объекты memoryview позволяют коду Python получать доступ к внутренним данным объекта, который поддерживает буферный протокол, без копирования.
-Поддерживает срезы и индексирование.
-Элемент в memoryview - атомарная единица памяти. Для простых типов, таких как bytes и bytearray, элемент - один байт.
+Базовый класс Компонент объявляет общий интерфейс как для простых, так и для сложных объектов структуры
+Базовый Компонент может объявить интерфейс для установки и получения родителя компонента в древовидной структуре
+Может предоставить некоторую реализацию по умолчанию для этих методов
+class Component(ABC):
 
-""""
+    @property
+    def parent(self) -> Component:
+        return self._parent
 
-v = memoryview(b'abcefg')     # передаем строку байт
-v[1]                          # 98 - это b
-v[-1]                         # 103
-v[1:4]                        # <memory at 0x7f3ddc9f4350>   срез возвращает объект
-bytes(v[1:4])                 # b'bce'                       преобразование объекта memory в байты
+    @parent.setter
+    def parent(self, parent: Component):
+        self._parent = parent
 
+    """
+    В некоторых случаях целесообразно определить операции управления потомками прямо в базовом классе Компонент. 
+    Таким образом, вам не нужно будет предоставлять конкретные классы компонентов клиентскому коду, даже во время
+    сборки дерева объектов. Недостаток такого подхода в том, что эти методы будут пустыми для компонентов уровня листа.
+    """
 
+    def add(self, component: Component) -> None:
+        pass
 
+    def remove(self, component: Component) -> None:
+        pass
 
-memoryview.__eq__(exporter)
-# сравнение memoryview и буфера обмена - вернет bool
-# memoryview     объект памяти буфера обмена
-# exporter       буфер обмена
+    def is_composite(self) -> bool:
+        """
+        Вы можете предоставить метод, который позволит клиентскому коду понять,
+        может ли компонент иметь вложенные объекты.
+        """
 
+        return False
 
+    @abstractmethod
+    def operation(self) -> str:
+        """
+        Базовый Компонент может сам реализовать некоторое поведение по умолчанию
+        или поручить это конкретным классам, объявив метод, содержащий поведение
+        абстрактным.
+        """
 
-
-memoryview.tobytes(order=None)
-# вернет данные из буфера обмена как строку байтов bytestring - аналог bytes() в представлении памяти
-# memoryview     объект памяти буфера обмена
-# order=None     как преобразовывать данные
-
-m = memoryview(b"abc")       # объект буфера обмена с байтовой строкой 
-m.tobytes()                  # b'abc'    строка байт
-
-
-memoryview.hex()
-# вернет строку, содержащую 2 шестнадцатеричные цифры для каждого байта в буфере
-
-m = memoryview(b"abc")
-m.hex()                      # '616263'
-
-
-memoryview.tolist()
-# вернет данные буфера обмена в виде списка элементов буфера
-
-memoryview(b'abc').tolist()  # [97, 98, 99]
+        pass
 
 
-memoryview.toreadonly()
-# вернет версию буфера обмена только для чтения, исходный объект памяти не изменится
+class Leaf(Component):
+    """
+    Класс Лист представляет собой конечные объекты структуры. Лист не может
+    иметь вложенных компонентов.
 
-m = memoryview(bytearray(b'abc'))
-mm = m.toreadonly()          # новый объект только для чтения     
-mm.tolist()                  # [89, 98, 99] вывод
-mm[0] = 42                   # TypeError: cannot modify read-only memory
+    Обычно объекты Листьев выполняют фактическую работу, тогда как объекты
+    Контейнера лишь делегируют работу своим подкомпонентам.
+    """
 
-
-
-memoryview.release()
-# освободит базовый буфер, открытый объектом memoryview
-# метод удобен для удаления ограничений и освобождения любых зависших ресурсов
-
-m = memoryview(b'abc')
-m.release()                  # любая дальнейшая операция над представлением вызывает ValueError 
+    def operation(self) -> str:
+        return "Leaf"
 
 
-memoryview.cast(format[, shape])
-# приведет memoryview к новому формату format или форме shape
-import array
-a = array.array('l', [1,2,3])
-x = memoryview(a)
-x.format                     # 'l'
-y = x.cast('B')
-y.format                     # 'B'
+class Composite(Component):
+    """
+    Класс Контейнер содержит сложные компоненты, которые могут иметь вложенные
+    компоненты. Обычно объекты Контейнеры делегируют фактическую работу своим
+    детям, а затем «суммируют» результат.
+    """
+
+    def __init__(self) -> None:
+        self._children: List[Component] = []
+
+    """
+    Объект контейнера может как добавлять компоненты в свой список вложенных
+    компонентов, так и удалять их, как простые, так и сложные.
+    """
+
+    def add(self, component: Component) -> None:
+        self._children.append(component)
+        component.parent = self
+
+    def remove(self, component: Component) -> None:
+        self._children.remove(component)
+        component.parent = None
+
+    def is_composite(self) -> bool:
+        return True
+
+    def operation(self) -> str:
+        """
+        Контейнер выполняет свою основную логику особым образом. Он проходит
+        рекурсивно через всех своих детей, собирая и суммируя их результаты.
+        Поскольку потомки контейнера передают эти вызовы своим потомкам и так
+        далее, в результате обходится всё дерево объектов.
+        """
+
+        results = []
+        for child in self._children:
+            results.append(child.operation())
+        return f"Branch({'+'.join(results)})"
+
+
+def client_code(component: Component) -> None:
+    """
+    Клиентский код работает со всеми компонентами через базовый интерфейс.
+    """
+
+    print(f"RESULT: {component.operation()}", end="")
+
+
+def client_code2(component1: Component, component2: Component) -> None:
+    """
+    Благодаря тому, что операции управления потомками объявлены в базовом классе
+    Компонента, клиентский код может работать как с простыми, так и со сложными
+    компонентами, вне зависимости от их конкретных классов.
+    """
+
+    if component1.is_composite():
+        component1.add(component2)
+
+    print(f"RESULT: {component1.operation()}", end="")
+
+
+if __name__ == "__main__":
+    # Таким образом, клиентский код может поддерживать простые компоненты-
+    # листья...
+    simple = Leaf()
+    print("Client: I've got a simple component:")
+    client_code(simple)
+    print("\n")
+
+    # ...а также сложные контейнеры.
+    tree = Composite()
+
+    branch1 = Composite()
+    branch1.add(Leaf())
+    branch1.add(Leaf())
+
+    branch2 = Composite()
+    branch2.add(Leaf())
+
+    tree.add(branch1)
+    tree.add(branch2)
+
+    print("Client: Now I've got a composite tree:")
+    client_code(tree)
+    print("\n")
+
+    print("Client: I don't need to check the components classes even when managing the tree:")
+    client_code2(tree, simple)
 
 
 
-memoryview.obj
-# атрибут только для чтения, представляет основной объект обзора памяти
-
-b  = bytearray(b'xyz')       # объект массива из байтовой строки
-m = memoryview(b)            # объект в буфере
-m.obj is b                   # True
 
 
-memoryview.nbytes
-# атрибут только для чтения. Показывает количество пространства в байтах, которое массив будет использовать в непрерывном представлении
-import array
-a = array.array('i', [1,2,3,4,5])
-m = memoryview(a)
 
-len(m)                       # 5
-m.nbytes                     # 20
-y = m[::2]
-len(y)                       # 3
-y.nbytes                     # 12
-len(y.tobytes())             # 12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
