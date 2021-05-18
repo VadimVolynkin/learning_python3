@@ -1,47 +1,25 @@
-# как добавить метод в экземпляр
-# как удалить метод из экземпляра
-# 89===
-class Cat:
-    """Строка документации класса"""
 
-    name = 'bob'                    # атрибут класса - доступен каждому экземпляру
-    emp_count = 0                   # счетчик созданных объектов
+class Target:
 
-    def __init__(self, color):      # color - атрибут экземпляра, получаемый при создании
-        self.color = color          # self - ссылка на объект в памяти
-        Cat.emp_count += 1          # увеличит счетчик созданных объектов на 1
-
-    def print_name(self):           # функция в классе, метод в экземпляре
-        print(self.name)
-
-# создаем объекты
-obj = Cat('white')
-obj2 = Cat('red')
-obj3 = Cat('green')
-
-def print_hello(self):
-    print('hello')
-
-obj.age = 35
-print(obj.__dict__)
-print(dir(obj))
-
-print(Cat.__name__)
-
-# print(obj.__class__)
+    def request(self) -> str:
+        return "Target: The default target's behavior."
 
 
+# Класс с доп логикой с несовместимым с клиентом интерфейсом(другое название метода и неверный возвращаемый результат)
+class Adaptee:
+
+    def specific_request(self) -> str:
+        return ".eetpadA eht fo roivaheb laicepS"
 
 
+# Класс Адаптер наследуется от целевого класса
+# Переопределяет у себя его метод - он вызывает метод адаптируемого объекта с обработкой его результата.
+# Объект Адаптера при создании принимает адаптируемый объект, либо принимает его в параметре своего метода
+class Adapter(Target):
 
+    def __init__(self, adaptee: Adaptee) -> None:
+        self.adaptee = adaptee
 
-
-
-
-
-
-
-
-
-
+    def request(self) -> str:
+        return f"Adapter: (TRANSLATED) {self.adaptee.specific_request()[::-1]}"
 
