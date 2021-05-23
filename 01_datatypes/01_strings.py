@@ -144,7 +144,7 @@ x = title.istitle()               # True первая буква каждого 
 
 
 # ===== Срезы
-a[5:10:2]                         # a[start:stop:step]
+a[5:10:2]                                   # a[start:stop:step]
 
 # ===== f-STRING, r-STRING
 name = 'Ivan'

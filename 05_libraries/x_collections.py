@@ -1,1 +1,0 @@
-# https://pythonworld.ru/moduli/modul-collections.html
