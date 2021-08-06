@@ -5,11 +5,11 @@
 # Это позволяет избежать конфликтов между разными версиями.
 
 
-
 # ======================================================================================================
 # PIPENV
 # ======================================================================================================
 # Отличный инструмент для управления вирт. окруженим.
+
 
 # ===== УСТАНОВКА PIPENV ===============================================================================
 # если pip не установлен - сначала установите его
@@ -28,95 +28,77 @@ export PIPENV_VENV_IN_PROJECT=1
 
 
 # ===== ПОПУЛЯРНЫЕ КОМАНДЫ ==============================================================================
-pipenv install --three          # установит питон 3
-pipenv --python 3.8.5           # установит конкретную версию
+pipenv install --three              # установит питон 3
+pipenv --python 3.8.5               # установит конкретную версию
 
 
 # При наличии файла .env команды $ pipenv shell и $ pipenv run, автоматически подгрузят из него переменные окружения.
-pipenv shell                    #
-pipenv run
-                   
+pipenv shell                        # создает среду по умолчанию или активирует имеющуюся
+deactivate                          # деактивирует активную среду
 
-deactivate
+pip freeze                                     # покажет все версии из активного окружения
+pipenv lock                                    # блокировать среду, создаст/обновит файл Pipfile.lock
+pip freeze > requirements.txt                  # создаст или обновит requirements.txt
+pipenv lock -r -d > dev-requirements.txt       # сгенерирует dev-requirements.txt из Pipfile --dev
+pipenv install -r dev-requirements.txt --dev   # добавит в Pipfile --dev из dev-requirements.txt
 
-exit
+pipenv install                      # установит все основные пакеты из Pipfile в текущей директории
+pipenv install -r requirements.txt  # установит все пакеты из requirements.txt
+pipenv install --system             # --system устанавливать зависимости в родительскую систему
+pipenv install --deploy             # --deploy выдаст ошибку, если Pipfile.lock устарел или версия Python не соответсвует указанной
+pipenv install --ignore-pipfile     # установка всех зависимостей. —ignore-pipfile игнорирует Pipfile и использует Pipfile.lock
 
-pipenv install django
+pipenv install ipython --dev        # установить в dev
+pipenv install --dev                # установить все основные пакеты + пакеты --dev из файла Pipenv
 
-pipenv install Flask==1.0.2
-
-pipenv uninstall Flask
-
+pipenv install Flask==1.0.2         # установка пакета
+pipenv uninstall Flask              # удаление пакета
 pipenv install -e git+https://github.com/requests/requests.git#egg=requests
 
-pipenv install pytest --dev              // установить в dev
+pipenv graph                        # граф зависимостей
+pipenv check                        # проверит на наличие уязвимостей
+pipenv --venv                       # путь к виртуальной среде
+pipenv --where                      # путь к проекту
 
-pipenv install --dev                         // установить все пакеты, включая пакеты среды разработки
-
-pipenv lock                                     // блокировать среду, создаст/обновит файл Pipfile.lock
-
-Другое
-
-pip freeze                                       // покажет все версии из активного окружения
-
-pipenv graph                                  // покажет граф зависимостей
-
-pipenv check                                  // проверит на наличие уязвимостей
-
-pipenv --venv                                  // по какому пути находится виртуальная среда
-
-pipenv --where                                // по какому пути находится ваш проект
-
-pipenv install -r dev-requirements.txt --dev            // добавит в Pipfile --dev из dev-requirements.txt
-
-pipenv lock -r -d > dev-requirements.txt                 // сгенерирует dev-requirements.txt из Pipfile --dev
-
-Развертывание приложения
-
-pipenv install --system                    // устанавливать зависимости в родительскую систему
-
-pipenv install --deploy
-
-Dockerfile для работы с pipenv           
-
+# ======================================================================================================
+# Dockerfile для работы с pipenv 
+# ======================================================================================================
 FROM python:3.7
 
 RUN pip3 install pipenv
 
 WORKDIR /usr/src/app
 
-COPY Pipfile ./
-COPY Pipfile.lock ./
+COPY Pipfile* ./
 
+# --system устанавливать зависимости в родительскую систему
+# --deploy выдаст ошибку, если Pipfile.lock устарел или версия Python не соответсвует указанной
 RUN set -ex && pipenv install --deploy --system
 
 COPY . .
 
-Перенос в рабочую среду
 
-pipenv lock
+# ======================================================================================================
+# VIRTUALENV
+# ======================================================================================================
+pip install virtualenv           # установка
 
-перенос файлов
+python3 -m venv env              # создаст среду env
+source env/bin/activate          # активирует среду
+deactivate                       # деактивирует среду
 
-pipenv shell                                    // создаст собственную среду окружения
-
-pipenv install                                  // Если в файле Pipfile не указывается точная версия, команда install устанавливает последние версии зависимостей из Pipfile
-
-pipenv install --ignore-pipfile          // установка всех зависимостей. —ignore-pipfile игнорирует Pipfile для установки и использует то, что находится в Pipfile.lock в момент блокировки.
-
+mkvirtualenv my-new-project      # создаст и активирует среду
 
 
 # ======================================================================================================
-# ВИРТУАЛЬНЫЕ ОКРУЖЕНИЯ
+# Встроенный пакет для работы с вирт средой
 # ======================================================================================================
-$ python3 -m venv env   env/bin/activate
-(env)$ pip install -r requirements.txt
-(env)$ python manage.py makemigrations
-(env)$ python manage.py migrate
-(env)$ python manage.py runserve
+sudo apt install python3-venv
 
+python3 -m venv venv
 
-
+venv/bin/activate
+deactivate
 
 
 

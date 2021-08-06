@@ -59,7 +59,6 @@ connection.close()                    # Закрыть соединение
 # ====================================================================================================
 # CREATE DB, CONNECT AND CURSOR
 # ====================================================================================================
-
 import sqlite3
 
 with sqlite3.connect(
@@ -72,11 +71,12 @@ with sqlite3.connect(
 Когда контекстный менеджер завершает свою работу, он автоматически выполняет два метода:
     con.commit() – применение всех изменений в таблицах БД
     con.close() – закрытие соединения с БД.
+
 # ====================================================================================================
 # CREATE AND DELETE TABLE
 # ====================================================================================================
-
-cur.execute("""CREATE TABLE IF NOT EXISTS users (        # IF NOT EXISTS - если нет такой таблицы
+# IF NOT EXISTS - если нет такой таблицы
+cur.execute("""CREATE TABLE IF NOT EXISTS users (        
     name TEXT NOT NULL,
     sex INTEGER,
     old INTEGER,
@@ -95,10 +95,10 @@ cur.execute("SELECT Name FROM Artist ORDER BY Name LIMIT 3")
 results = cur.fetchall()
 print(results)   # [('A Cor Do Som',), ('Aaron Copland & London Symphony Orchestra',), ('Aaron Goldberg',)]
 
-for row in cur.fetchall():              # сформирует полный список
+for row in cur.fetchall():              # сформирует полный список(может потребовать много памяти)
     print(row)
 
-for row in cur:                         # не формирует список, итерирует по одному
+for row in cur:                         # не формирует список, итерирует по одному(экономит память)
     print(row)
 
 # ====================================================================================================
