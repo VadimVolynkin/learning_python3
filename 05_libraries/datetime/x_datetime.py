@@ -1,3 +1,115 @@
+https://docs-python.ru/standart-library/modul-datetime-python/metody-ekzempljara-ditetime-datetime/
+
+# =====================================================================
+# DATETIME
+# =====================================================================
+Типы datetime.date, datetime.time, datetime.datetime и datetime.timezone вляются хешируемыми(могут быть ключами словаря), поддерживают сериализацию pickle.
+
+Объекты даты и времени могут быть:
+
+# Осведомленные
+Представляют определенный момент времени, который нельзя интерпретировать по другому.
+Могут найти себя относительно других осведомленных объектов.
+Содержат атрибут tzinfo - в нем хранится инфа о смещении времени от UTC, имени часового пояса и действии летнего времени.
+
+# Наивные
+Не имеют достаточно информации о времени в конкретном месте. 
+Могут представлять: UTC, местное время или время в другом часовом поясе - это зависит от программы
+Наивные объекты модуля datetime обрабатываются многими методами объекта datetime.datetime() как локальное время, поэтому предпочтительно использовать осведомленные объекты.
+
+# =====================================================================
+# DATETIME.DATETIME
+# =====================================================================
+dt = datetime.datetime(
+    year, month, day, 
+    hour=0, minute=0, second=0, microsecond=0, 
+    tzinfo=None, *, fold=0)
+
+# создание объекта datetime
+date = datetime.datetime(2021, 3, 25)                # 2021-03-25 00:00:00
+dt   = datetime.datetime(2021, 3, 25, 13, 45)        # 2021-03-25 13:45:00
+
+# текущая локальная дата и время с tzinfo=None
+datetime.datetime.today()                            # 2021-08-07 13:56:59.104110
+
+# текущая локальная дата и время при tz=None
+# tz может быть datetime.tzinfo или zoneinfo
+datetime.datetime.now(tz=None)                       # 2021-08-07 13:57:26.349301
+
+# текущая дата и время UTC 
+datetime.datetime.utcnow()                           # 2021-08-07 10:58:14.661047       # наивный объект с tzinfo=None
+datetime.datetime.now(datetime.timezone.utc)         # 2021-08-07 11:07:10.534944+00:00 # осведомленный объект
+
+# из timestamp POSIX
+datetime.datetime.fromtimestamp(time.time())         # 2021-08-07 14:10:30.637100
+
+# дата и время UTC из 
+datetime.datetime.utcfromtimestamp(time.time())      # 2021-08-07 11:13:36.877296       # наивный объект с tz=None
+
+# из datetime.date + datetime.time 
+date = datetime.date.today()
+time = datetime.time(23, 55)
+datetime.datetime.combine(date, time)                # 2021-08-07 23:55:00
+
+# из строки ISO 
+datetime.datetime.fromisoformat('2011-11-04')                      # 2011-11-04 00:00:00
+datetime.datetime.fromisoformat('2011-11-04T00:05:23')             # 2011-11-04 00:05:23
+datetime.datetime.fromisoformat('2011-11-04T00:05:23+04:00')       # 2011-11-04 00:05:23+04:00
+
+# из календарной даты ISO
+dt = datetime.datetime.now()
+dt.isocalendar()                                      # datetime.IsoCalendarDate(year=2021, week=31, weekday=6)
+dt2 = datetime.datetime(2021, 9, 30)
+datetime.datetime.isocalendar(dt2)                    # datetime.IsoCalendarDate(year=2021, week=39, weekday=4)
+
+# парсит из какой то строки в соответствии с форматом
+date_str = 'Fri, 24 Apr 2021 16:22:54 +0000'
+format = '%a, %d %b %Y %H:%M:%S +0000'
+datetime.datetime.strptime(date_str, format)          # 2021-04-24 16:22:54
+
+# вычисление времени с помощью timedelta
+tdelta = datetime.timedelta(hours=3)                  # 3:00:00                    создаем делту 3 часа
+dt = datetime.datetime.now()                          # 2021-08-07 15:08:09.790242 получаем текущее время
+dt + tdelta                                           # 2021-08-07 18:08:09.790242
+
+# вычисление разницы между двумя datetime
+# вернет объект timedelta
+dt1 = datetime.datetime.now()                         # <class 'datetime.datetime'>
+dt2 = dt1 + datetime.timedelta(hours=3)               # <class 'datetime.datetime'>
+delta_dt = dt2 - dt1                                  # 3:00:00 <class 'datetime.timedelta'>
+
+print(diff_dt)
+print(type(diff_dt))
+
+# =====================================================================
+# DATETIME.TIME
+# =====================================================================
+
+
+# =====================================================================
+# DATETIME.DATE
+# =====================================================================
+
+
+# =====================================================================
+# DATETIME.TIMEDELTA
+# =====================================================================
+
+
+
+# =====================================================================
+# DATETIME.TZINFO
+# =====================================================================
+# считается не очень хорошим решением. вместо него часто используется pytz
+datetime.tzinfo()
+
+
+# =====================================================================
+# DATETIME.TIMEZONE
+# =====================================================================
+
+
+
 https://www.youtube.com/watch?v=hj6Tgc4hEU0
 
 # pipenv install maya
@@ -6,12 +118,14 @@ import datetime
 import pytz
 
 
-# pytz позволяет получить зону по имени
+# pytz позволяет получить зону
 dt = datetime.datetime.now()                              # 2021-01-15 18:20:43.945110
 dtu= datetime.datetime.utcnow()                           # 2021-01-15 15:20:43.945135
 dtp= datetime.datetime.now(tz=pytz.UTC)                   # 2021-01-15 15:20:43.945143+00:00
 dt_moscow = dt.astimezone(pytz.timezone('Europe/Moscow')) # 2021-01-15 18:20:43.945110+03:00
 
+# все таймзоны pytz
+# зоны типа Etc/GMT-7 = GMT+7(они как бы инвертированы по знаку)
 for tz in pytz.all_timezones:
     print(tz)
 
