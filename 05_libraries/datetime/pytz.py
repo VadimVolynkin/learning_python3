@@ -39,7 +39,7 @@ common_timezone_set = pytz.common_timezones_set        # LazySet({'Europe/Kiev',
 # ===== ОБЪЕКТ ТАЙМЗОНЫ
 
 # создание объектов таймзоны
-utc = pytz.utc                                         # получение UTC
+utc = pytz.utc                                         # получение UTC таймзоны
 moscow_tz = pytz.timezone('Europe/Moscow')             # получение таймзоны
 
 print(moscow_tz.zone)                                  # Europe/Moscow
