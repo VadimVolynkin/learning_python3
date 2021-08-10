@@ -1,4 +1,9 @@
-https://www.postgresqltutorial.com/
+
+# TODO Управление транзакциями в PostgreSQL
+https://pythonru.com/biblioteki/tranzakcii-postgres-v-python
+
+
+# https://www.postgresqltutorial.com/
 # https://khashtamov.com/ru/postgresql-python-psycopg2/
 # https://eax.me/tag/postgresql/
 # OpenStreetMap https://eax.me/postgis/
@@ -8,7 +13,24 @@ https://www.postgresqltutorial.com/
 
 import psycopg2
 
+
+https://ru.wikipedia.org/wiki/PostgreSQL
+
 # TODO drop db if exist and createdb
+высокопроизводительные и надёжные механизмы транзакций и репликации;
+один из встроенных языков - питон.
+поддерживает наследрвание
+PostGIS;
+JSON с возможностью их индексации
+PostgreSQL поддерживает одновременную модификацию БД несколькими пользователями с помощью механизма Multiversion Concurrency Control (MVCC). Благодаря этому соблюдаются требования ACID и практически отпадает нужда в блокировках чтения.
+
+
+
+в PostgreSQL вообще не допускается синтаксис UTF-8.Поддержка Юникода (UTF-8) 
+PostgreSQL различает регистр. Строки в запросах должны в точности совпадать с полями в базе данных.
+Максимальный размер поля 	1 Гбайт
+Максимум полей в записи 	250—1600, в зависимости от типов полей
+
 
 # ===============================================================================================
 # CREATE DATABASE
